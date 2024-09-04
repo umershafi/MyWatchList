@@ -21,8 +21,9 @@ app.post("/process-video", async (req, res) => {
         return res.status(400).send('Bad Request: missing filename.')
     }
 
-    const inputFileName = data.name;
+    const inputFileName = data.name; // Format of <UID>-<DATE>.<EXTENSION>
     const outputFileName = `processed-${inputFileName}`;
+    const videoId = inputFileName.split('.')[0];
 
     // Download the raw video from Cloud Storage
     await downloadRawVideo(inputFileName);

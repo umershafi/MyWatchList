@@ -5,7 +5,6 @@ import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
 
 const storage = new Storage(); // create an instance
-
 const rawVideoBucketName = "us-raw-videos02"; // people will upload videos to this
 const processedVideoBucketName = "us-proc-videos02";// upload processed videos here
 
@@ -28,16 +27,18 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
         ffmpeg(`${localRawVideoPath}/${rawVideoName}`) // pass in the path of the video file you want to process
             // chain the events
             .outputOptions("-vf", "scale=-1:360") // video file, sale it into 360p
-            .on("end", () => { // event listener for end event
+            .on("end", function () { // event listener for end event
                 console.log("Processing Finished Successfully.");
                 resolve();
             })
-            .on("error", (err) => { // event listener for error event
+            .on("error", (err, stdout, stderr) => { // event listener for error event
                 console.log(`an error occured: ${err.message}`);
+                console.log("stdout:\n" + stdout);
+                console.log("stderr:\n" + stderr);
                 reject(err); 
             })
             .save(`${localProcessedVideoPath}/${processedVideoName}`); // path where processed video is saved
-        })
+        });
 }
 
 /**
@@ -50,7 +51,7 @@ export async function downloadRawVideo(fileName: string) {
         .file(fileName)
         .download({ destination: `${localRawVideoPath}/${fileName}` });
 
-    console.log(`gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`)
+    console.log(`gs://${rawVideoBucketName}/${fileName} downloaded to ${localRawVideoPath}/${fileName}.`);
 }
 
 /**
@@ -66,7 +67,7 @@ export async function uploadProcessedVideo(fileName: string) {
         destination: fileName
     });
 
-    console.log(`${processedVideoBucketName}/${fileName} uploaded to gs://${processedVideoBucketName}/${fileName}.`)
+    console.log(`${processedVideoBucketName}/${fileName} uploaded to gs://${processedVideoBucketName}/${fileName}.`);
 
     await bucket.file(fileName).makePublic(); // set the file to be public (will be private by default)
 }
