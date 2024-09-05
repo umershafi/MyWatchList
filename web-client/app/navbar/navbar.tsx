@@ -1,36 +1,42 @@
 'use client';
 
-import Image from "next/image";
+import SignIn from "./sign-in";
 import Link from "next/link";
 
 import styles from "./navbar.module.css";
-import SignIn from "./sign-in";
+import { useEffect, useState } from "react";
 import { onAuthStateChangedHelper } from "../firebase/firebase";
 import { User } from "firebase/auth";
-import { useState, useEffect } from "react";
+import Upload from "./upload";
 
-export default function Navbar() {
-    // Init user state
-    const [user, setUser] = useState<User | null>(null);
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChangedHelper((user) => {
-            setUser(user);
-        });
-        // Cleanup subscription on unmount
-        return () => unsubscribe();
+function NavBar() {
+  // Initialize user state
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChangedHelper((user) => {
+      setUser(user);
     });
 
-    return(
-        <nav className={styles.nav}>
-            <Link href="/">
-                <Image width={150} height={50} 
-                src="/camera-logo.svg" alt="camera logo" />
-            </Link>
-            {
-                // TODO: Add an upload button
-            }
-            <SignIn user={user}/>
-        </nav>
-    );
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, [] /* No dependencies, never rerun */);
+
+
+  return (
+    <nav className={styles.nav}>
+      <Link href="/">
+        <span className={styles.logoContainer}>
+          <img width={90} height={20} className={styles.logo} src="/youtube-logo.svg" alt="YouTube Logo" />
+        </span>
+      </Link>
+      {
+        user && <Upload />
+      }
+      <SignIn user={user} />
+    </nav>
+  );
 }
+
+export default NavBar;
