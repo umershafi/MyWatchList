@@ -1,0 +1,12 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* This ensures padding does not affect the total width/height of elements */
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  background-color: #121212;
+  color: white;
+}
