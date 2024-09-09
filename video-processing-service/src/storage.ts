@@ -5,8 +5,8 @@ import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
 
 const storage = new Storage(); // create an instance
-const rawVideoBucketName = "us-raw-videos02"; // people will upload videos to this
-const processedVideoBucketName = "us-proc-videos02";// upload processed videos here
+const rawVideoBucketName = "umer-raw-videos"; // people will upload videos to this
+const processedVideoBucketName = "umer-processed-videos";// upload processed videos here
 
 const localRawVideoPath = "./raw-videos";
 const localProcessedVideoPath = "./processed-videos";
@@ -26,7 +26,7 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
     return new Promise<void>((resolve, reject) => {
         ffmpeg(`${localRawVideoPath}/${rawVideoName}`) // pass in the path of the video file you want to process
             // chain the events
-            .outputOptions("-vf", "scale=-1:360") // video file, sale it into 360p
+            .outputOptions("-vf", "scale=0:360") // video file, sale it into 360p
             .on("end", function () { // event listener for end event
                 console.log("Processing Finished Successfully.");
                 resolve();
