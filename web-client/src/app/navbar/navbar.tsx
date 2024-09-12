@@ -43,9 +43,11 @@ function NavBar() {
           </Link>
         </li>
         <li>
-          {
-          user && <Upload />
-          }
+        
+          <Link href="/upload">
+          {user && <Upload />}
+          </Link>
+          
         </li>
         <li>
           <SignIn user={user} />

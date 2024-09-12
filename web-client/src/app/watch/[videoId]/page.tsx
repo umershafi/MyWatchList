@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation'
 import Styles from "./page.module.css";
 
 
-export default function videoId() {
+export default function VideoId() {
   const videoPrefix = 'https://storage.googleapis.com/umer-processed-videos/';
   const videoSrc = useSearchParams().get('v');
 

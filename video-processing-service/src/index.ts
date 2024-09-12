@@ -1,5 +1,5 @@
 import express from "express";
-import { downloadRawVideo, setupDirectories, uploadProcessedVideo, convertVideo, deleteRawVideo, deleteProcessedVideo } from "./storage";
+import { downloadRawVideo, setupDirectories, uploadProcessedVideo, convertVideo, deleteRawVideo, deleteProcessedVideo, getMetadata } from "./storage";
 import { isVideoNew, setVideo } from "./firestore";
 
 setupDirectories();
@@ -27,13 +27,21 @@ app.post("/process-video", async (req, res) => {
     const outputFileName = `processed-${inputFileName}`;
     const videoId = inputFileName.split('.')[0];
 
-    if (!isVideoNew(videoId)) {
+    // get the metadata from Cloud Storage
+    const videoTitle = await getMetadata(inputFileName);
+
+    if (!videoTitle) {
+        return res.status(400).send('Bad Request: No metadata found.');
+    }
+
+    if (!isVideoNew(videoId)) { // adding videos to firestore
         return res.status(400).send('Bad Request: video already processing or processed.');
       } else {
         await setVideo(videoId, {
           id: videoId,
           uid: videoId.split('-')[0],
-          status: 'processing'
+          status: 'processing',
+          title: videoTitle
         });
       }
 

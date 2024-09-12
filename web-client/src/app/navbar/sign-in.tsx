@@ -13,11 +13,11 @@ export default function SignIn({ user }: SignInProps) {
 
   const [open, setOpen] = useState(false);
   const menuRef: any = useRef(null);
-  console.log(user);
-  console.log(user?.email);
+  // console.log(user);
+  // console.log(user?.email);
 
   useEffect(() => {
-    let handler = (e: any) => {
+    const handler = (e: any) => {
       if(menuRef.current && !menuRef.current.contains(e.target)) {
         setOpen(false);
       }
@@ -56,14 +56,5 @@ export default function SignIn({ user }: SignInProps) {
         </button>
       )}
     </div>
-  );
-}
-
-function DropdownItem(props: any){
-  return(
-    <li className = 'dropdownItem'>
-      <img src={props.img}></img>
-      <a> {props.text} </a>
-    </li>
   );
 }

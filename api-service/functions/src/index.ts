@@ -50,12 +50,16 @@ export const generateUploadUrl = onCall({maxInstances: 1}, async (request) => {
 
   // Generate a unique filename for upload
   const fileName = `${auth.uid}-${Date.now()}.${data.fileExtension}`;
+  const videoTitle = data.vidTitle;
 
   // Get a v4 signed URL for uploading file
   const [url] = await bucket.file(fileName).getSignedUrl({
     version: "v4",
     action: "write",
     expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+    extensionHeaders: {
+      "x-goog-meta-title": videoTitle,
+    },
   });
 
   return {url, fileName};
@@ -65,4 +69,22 @@ export const getVideos = onCall({maxInstances: 1}, async () => {
   const snapshot =
     await firestore.collection(videoCollectionId).limit(10).get();
   return snapshot.docs.map((doc) => doc.data());
+});
+
+export const setVideos = onCall({maxInstances: 1}, async (request) => {
+  if (!request.auth) {
+    throw new functions.https.HttpsError(
+      "failed-precondition",
+      "The function must be called while authenticated."
+    );
+  }
+
+  const {videoId, video} = request.data;
+  logger.info("videoId: ", videoId);
+  logger.info("video: ", video);
+
+  return firestore
+    .collection(videoCollectionId)
+    .doc(videoId)
+    .set(video, {merge: true});
 });

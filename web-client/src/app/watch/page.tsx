@@ -15,6 +15,7 @@ export default async function Watch() {
           <Link href={`/watch/video?v=${video.filename}`} key={video.id}>
             <Image src={'/thumbnail.png'} alt='video' width={120} height={80}
               className={Style.thumbnail}/>
+            <h1> video title:  {video.title} </h1>
           </Link>
         ))
       }

@@ -11,6 +11,31 @@ const processedVideoBucketName = "umer-processed-videos";// upload processed vid
 const localRawVideoPath = "./raw-videos";
 const localProcessedVideoPath = "./processed-videos";
 
+export async function getMetadata(fileName: string) {
+    const [metadata] = await storage.bucket(rawVideoBucketName).file(fileName).getMetadata();
+    console.log(`Bucket: ${metadata.bucket}`);
+
+    if (metadata.metadata) {
+        console.log('\n\n\nUser metadata:');
+
+        for (const key in metadata.metadata) {
+          console.log(`${key}=${metadata.metadata[key]}`);
+          const value = metadata.metadata[key];
+          if (typeof value === 'string') {
+            return value;
+          }
+          else {
+            console.log("Metadata value is not a string");
+            return null;
+          }
+        }
+        
+      } else {
+        console.log("No video metadata found");
+        return null;
+      }
+}
+
 // Creates the local directories for raw and processes videos
 export function setupDirectories() {
     ensureDirectoryExists(localRawVideoPath);
@@ -26,7 +51,7 @@ export function convertVideo(rawVideoName: string, processedVideoName: string) {
     return new Promise<void>((resolve, reject) => {
         ffmpeg(`${localRawVideoPath}/${rawVideoName}`) // pass in the path of the video file you want to process
             // chain the events
-            .outputOptions("-vf", "scale=0:360") // video file, sale it into 360p
+            .outputOptions("-vf", "scale=0:360") // video file, scale it into 360p
             .on("end", function () { // event listener for end event
                 console.log("Processing Finished Successfully.");
                 resolve();
